@@ -1,6 +1,6 @@
-import 'dart:developer';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skycast/base_architecture/core/api_end_point.dart';
 import 'package:skycast/base_architecture/domain/model/forecast_model.dart';
@@ -44,7 +44,6 @@ class CurrentForecastBloc extends BaseBloc<ForecastModel> {
     );
 
     if (cacheResponse.success && cacheResponse.data != null) {
-      log("Found in cache");
       emit(ApiSuccess<ForecastModel>(cacheResponse.data!));
       await _fetchFromApi(event.endpoint, parser, emit);
     } else {
@@ -60,12 +59,15 @@ class CurrentForecastBloc extends BaseBloc<ForecastModel> {
   ) async {
     final apiResponse = await forecastLocalUsecase.fetchFromApiOnly(
       endpoint: endpoint,
-      parser: _parseForecast,
+      parser: (json) => json,
       isList: false,
     );
-
     if (apiResponse.success && apiResponse.data != null) {
-      emit(ApiSuccess<ForecastModel>(apiResponse.data!));
+      final ForecastModel model = await compute(
+        _parseForecast,
+        apiResponse.data,
+      );
+      emit(ApiSuccess<ForecastModel>(model));
     } else if (state is! ApiSuccess) {
       emit(ApiFailure(apiResponse.message ?? 'Failed to load weather data.'));
     }

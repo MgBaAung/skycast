@@ -1,3 +1,6 @@
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skycast/base_architecture/app_setting/app_route.dart';
@@ -33,7 +36,7 @@ class _SplashLoaderState extends State<SplashLoader> {
   }
 
   void _checkAndNavigate() {
-    if (_isCurrentWeatherLoaded && _isForecastLoaded) {
+    if ( _isForecastLoaded) {
       NavigationService.instance.pushNamedAndRemoveUntil(AppRoute.searchScreen);
     }
   }
@@ -52,6 +55,7 @@ class _SplashLoaderState extends State<SplashLoader> {
         listeners: [
           BlocListener<CurrentWeatherBloc, ApiState>(
             listener: (context, state) {
+              log("weather : ${state}");
               if (state is ApiSuccess<WeatherDataModel>) {
                 _isCurrentWeatherLoaded = true;
                 _checkAndNavigate();
@@ -65,6 +69,8 @@ class _SplashLoaderState extends State<SplashLoader> {
 
           BlocListener<CurrentForecastBloc, ApiState>(
             listener: (context, state) {
+                            log("forecast : ${state}");
+
               if (state is ApiSuccess<ForecastModel>) {
                 _isForecastLoaded = true;
                 _checkAndNavigate();
