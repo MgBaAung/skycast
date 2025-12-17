@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:skycast/base_architecture/core/api_end_point.dart';
 import 'package:skycast/base_architecture/domain/model/wealther_data_model.dart';
 import 'package:skycast/base_architecture/domain/usecase/implement/current_weather_usecase.dart';
 import 'package:skycast/base_architecture/presentation/bloc/api_event.dart';
 import 'package:skycast/base_architecture/presentation/bloc/api_state.dart';
 import 'package:skycast/base_architecture/presentation/bloc/base_bloc.dart';
+
 class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
   final CurrentWeatherUsecase currentWeatherUsecase;
 
@@ -13,12 +15,16 @@ class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
     on<FetchFirstCachEvent<WeatherDataModel>>(_fetchCureentWeather);
   }
 
-  void fetchCureentWeather() {
+  void fetchCureentWeather(Position position) {
     add(
       FetchFirstCachEvent<WeatherDataModel>(
         endpoint: weatherUrl,
         parser: (json) => WeatherDataModel().fromMap(json),
         isList: false,
+        queryParams: {
+          'lat': position.latitude.toString(),
+          'lon': position.longitude.toString(),
+        },
       ),
     );
   }
@@ -33,6 +39,7 @@ class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
       endpoint: weatherUrl,
       parser: parser,
       isList: false,
+      queryParams: event.queryParams,
     );
 
     if (cacheResponse.success && cacheResponse.data != null) {
@@ -42,6 +49,7 @@ class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
         endpoint: event.endpoint,
         parser: parser,
         isList: false,
+        queryParams: event.queryParams,
       );
 
       if (apiResponse.success && apiResponse.data != null) {
@@ -54,6 +62,7 @@ class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
         endpoint: event.endpoint,
         parser: parser,
         isList: false,
+        queryParams: event.queryParams,
       );
 
       if (apiResponse.success && apiResponse.data != null) {
@@ -68,5 +77,4 @@ class CurrentWeatherBloc extends BaseBloc<WeatherDataModel> {
       }
     }
   }
-
 }

@@ -137,7 +137,7 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                                       ),
                                       onSubmitted: (value) {
                                         context.read<SearchBloc>().search(
-                                          value,
+                                          _cityController.text,
                                         );
                                       },
                                     ),
@@ -178,7 +178,6 @@ class _CitySearchScreenState extends State<CitySearchScreen> {
                   },
                 ),
               ),
-
               body: BlocBuilder<CurrentWeatherBloc, ApiState>(
                 buildWhen: (previous, current) {
                   return current is ApiSuccess<WeatherDataModel> ||

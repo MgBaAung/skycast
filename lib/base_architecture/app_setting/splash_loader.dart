@@ -1,12 +1,11 @@
-
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:skycast/base_architecture/app_setting/app_route.dart';
 import 'package:skycast/base_architecture/app_setting/navigation_service.dart';
 import 'package:skycast/base_architecture/domain/model/forecast_model.dart';
 import 'package:skycast/base_architecture/domain/model/wealther_data_model.dart';
+import 'package:skycast/base_architecture/domain/repository/implement/location_repository.dart';
 import 'package:skycast/base_architecture/presentation/bloc/api_state.dart';
 import 'package:skycast/base_architecture/presentation/bloc/implement/cureent_weather/cureent_forecast_bloc.dart';
 import 'package:skycast/base_architecture/presentation/bloc/implement/cureent_weather/cureent_weather_bloc.dart';
@@ -31,12 +30,17 @@ class _SplashLoaderState extends State<SplashLoader> {
   }
 
   Future<void> _fetchAndInitApp() async {
-    context.read<CurrentWeatherBloc>().fetchCureentWeather();
-    context.read<CurrentForecastBloc>().fetchCureentForecast();
+    Position position = await context
+        .read<LocationRepository>()
+        .getCurrentLocation();
+    if (mounted) {
+      context.read<CurrentForecastBloc>().fetchCureentForecast(position);
+      context.read<CurrentWeatherBloc>().fetchCureentWeather(position);
+    }
   }
 
   void _checkAndNavigate() {
-    if ( _isForecastLoaded) {
+    if (_isCurrentWeatherLoaded && _isForecastLoaded) {
       NavigationService.instance.pushNamedAndRemoveUntil(AppRoute.searchScreen);
     }
   }
@@ -55,7 +59,6 @@ class _SplashLoaderState extends State<SplashLoader> {
         listeners: [
           BlocListener<CurrentWeatherBloc, ApiState>(
             listener: (context, state) {
-              log("weather : ${state}");
               if (state is ApiSuccess<WeatherDataModel>) {
                 _isCurrentWeatherLoaded = true;
                 _checkAndNavigate();
@@ -69,8 +72,6 @@ class _SplashLoaderState extends State<SplashLoader> {
 
           BlocListener<CurrentForecastBloc, ApiState>(
             listener: (context, state) {
-                            log("forecast : ${state}");
-
               if (state is ApiSuccess<ForecastModel>) {
                 _isForecastLoaded = true;
                 _checkAndNavigate();

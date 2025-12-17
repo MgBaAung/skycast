@@ -87,7 +87,6 @@ class SkyCastApp extends StatelessWidget {
               currentWeatherUsecase: CurrentWeatherUsecase(
                 currentLocationRepository: context
                     .read<CurrentLocationRepository>(),
-                context.read<LocationRepository>(),
                 repository: context
                     .read<CurrentLocationWithLocalStoreRepository>(),
               ),
@@ -98,7 +97,6 @@ class SkyCastApp extends StatelessWidget {
               forecastLocalUsecase: ForecastLocalUsecase(
                 currentLocationRepository: context
                     .read<CurrentForecastRepository>(),
-                locationRepository: context.read<LocationRepository>(),
                 forecastWeatherWithLocalRepository: context
                     .read<ForecastWeatherWithLocalRepository>(),
               ),

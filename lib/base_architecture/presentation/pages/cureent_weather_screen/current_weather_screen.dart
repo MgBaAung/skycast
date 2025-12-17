@@ -14,12 +14,6 @@ class CurrentWeatherScreen extends StatefulWidget {
 
 class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
   @override
-  void initState() {
-    super.initState();
-    context.read<CurrentWeatherBloc>().fetchCureentWeather();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentWeatherBloc, ApiState>(
       buildWhen: (previous, current) {
