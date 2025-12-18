@@ -7,13 +7,14 @@ class WeatherWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double currentTemp = data.main?.temp ?? 0.0;
+    final double currentTemp = (data.main?.temp ?? 273.15) - 273.15;
     final String weatherDescription = data.weather?.isNotEmpty == true
         ? data.weather!.first.description ?? 'N/A'
         : 'N/A';
     final int conditionId = data.weather?.isNotEmpty == true
         ? data.weather!.first.id
-        : 800; 
+        : 800;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: Column(
@@ -28,11 +29,7 @@ class WeatherWidget extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-          Icon(
-            _getWeatherIcon(conditionId),
-            size: 100.0,
-            color: Colors.yellow,
-          ),
+          Icon(_getWeatherIcon(conditionId), size: 100.0, color: Colors.yellow),
           const SizedBox(height: 10),
           Text(
             '${currentTemp.toStringAsFixed(1)}°C',
@@ -53,7 +50,7 @@ class WeatherWidget extends StatelessWidget {
   }
 
   IconData _getWeatherIcon(int conditionId) {
-    if (conditionId < 300) return Icons.thunderstorm; 
+    if (conditionId < 300) return Icons.thunderstorm;
     if (conditionId < 500) return Icons.cloudy_snowing;
     if (conditionId < 600) return Icons.umbrella;
     if (conditionId < 700) return Icons.snowing;

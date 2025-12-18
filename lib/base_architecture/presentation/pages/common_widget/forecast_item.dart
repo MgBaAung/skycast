@@ -23,10 +23,12 @@ class DailyWeatherChart extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: dailyList.map((item) {
               DateTime date = DateTime.parse(item.dtTxt!);
               int conditionId = item.weather?.first.id ?? 800;
               return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     DateFormat('EEE').format(date),
@@ -38,6 +40,7 @@ class DailyWeatherChart extends StatelessWidget {
                   const SizedBox(height: 10),
                   SizedBox(
                     width: 70,
+                    height: 40,
                     child: Text(
                       weatherDescription(item.weather),
                       textAlign: TextAlign.center,
